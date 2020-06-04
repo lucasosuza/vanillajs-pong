@@ -101,10 +101,53 @@
     ctx.closePath();
   }
 
+  const brickRowCount = 3;
+  const brickColumnCount = 10;
+  const brickWidth = 72;
+  const brickHeight = 20;
+  const brickPadding = 10;
+  const brickOffsetTop = 30;
+  const brickOffsetLeft = 30;
+
+  let bricks = []
+  for (let c = 0; c < brickColumnCount; c++) {
+    bricks[c] = [];
+    for (let r = 0; r < brickRowCount; r++) {
+      bricks[c][r] = { x: 0, y: 0 };
+    }
+  }
+
+  console.log(bricks)
+
+
+  const drawBrick = (targetX, targetY) => {
+    ctx.beginPath();
+    ctx.rect(targetX, targetY, brickWidth, brickHeight);
+    ctx.fillStyle = "#0095DD";
+    ctx.fill();
+    ctx.closePath();
+  }
+
+  const drawBricks = () => {
+    for (let c = 0; c < brickColumnCount; c++) {
+      for (let r = 0; r < brickRowCount; r++) {
+        let brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft
+        let brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop
+
+        bricks[c][r].x = brickX
+        bricks[c][r].y = brickY
+
+        drawBrick(brickX, brickY)
+      }
+    }
+  }
+
+  
+
   const draw = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-
+    drawBricks()
 
     drawBall()
 
@@ -112,20 +155,17 @@
       dx = -dx;
     }
 
-    if(y + dy < ballRadius) {
-      console.log(y, "voltando")
+    if (y + dy < ballRadius) {
+      dy = -dy;
+    } else if (y + dy > canvas.height - ballRadius) {
+      if (x > paddleX && x < paddleX + paddleWidth) {
         dy = -dy;
-    } else if(y + dy > canvas.height - ballRadius ) {
-
-      console.log(y, "voltando")
-        if(x > paddleX && x < paddleX + paddleWidth) {
-            dy = -dy;
-        }
-        else {
-            alert("GAME OVER");
-            document.location.reload();
-            clearInterval(interval); // Needed for Chrome to end game
-        }
+      }
+      else {
+        alert("GAME OVER");
+        document.location.reload();
+        clearInterval(interval); // Needed for Chrome to end game
+      }
     }
 
     // Paddle moviment
