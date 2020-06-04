@@ -113,12 +113,9 @@
   for (let c = 0; c < brickColumnCount; c++) {
     bricks[c] = [];
     for (let r = 0; r < brickRowCount; r++) {
-      bricks[c][r] = { x: 0, y: 0 };
+      bricks[c][r] = { x: 0, y: 0, status: 1 };
     }
   }
-
-  console.log(bricks)
-
 
   const drawBrick = (targetX, targetY) => {
     ctx.beginPath();
@@ -131,18 +128,32 @@
   const drawBricks = () => {
     for (let c = 0; c < brickColumnCount; c++) {
       for (let r = 0; r < brickRowCount; r++) {
-        let brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft
-        let brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop
+        let brick = bricks[c][r]
 
-        bricks[c][r].x = brickX
-        bricks[c][r].y = brickY
+        if (brick.status == 1) {
+          brick.x = (c * (brickWidth + brickPadding)) + brickOffsetLeft
+          brick.y = (r * (brickHeight + brickPadding)) + brickOffsetTop
 
-        drawBrick(brickX, brickY)
+          drawBrick(brick.x, brick.y)
+        }
       }
     }
   }
 
-  
+  const collisionDetection = () => {
+    for (let c = 0; c < brickColumnCount; c++) {
+      for (let r = 0; r < brickRowCount; r++) {
+        let brick = bricks[c][r]
+
+        // collision with the area of the brick
+        if (x > brick.x && x < brick.x + brickWidth && y > brick.y && y < brick.y + brickHeight) {
+          brick.status = 0
+          dy = -dy
+        }
+      }
+    }
+  }
+
 
   const draw = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -171,6 +182,8 @@
     // Paddle moviment
 
     drawPaddle()
+
+    collisionDetection()
 
     if (rightPressed) {
       paddleX += 7
